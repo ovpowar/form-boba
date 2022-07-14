@@ -1,4 +1,4 @@
-import pyserial
+import serial
 
 actuators = ['R', 'L']
 steppers = ['A', 'B', 'C', 'X', 'Y', 'Z']
@@ -48,6 +48,7 @@ class BobaMachine():
 					# stopbits=serial.STOPBITS_ONE)
 	    #ser.port = 'COM4'
 	    # TESTING ONLY
+	
 	def test_code(self):
 	    msg = input('Message? ')
 	    command = self.ser.write(msg.encode())
@@ -58,8 +59,10 @@ class BobaMachine():
 	def update(self, order_queue):
 		print(order_queue)
 			
-	def main(self,...):
+	#def main(self,...):
 		#turn on rice cooker
 
-
+if __name__ == "__main__":
+	bob4 = BobaMachine()
+	bob4.test_code()
 
