@@ -12,7 +12,8 @@ import serial
 # simple syrup = Z
 
 actuators = ['R', 'L']
-steppers = ['A', 'B', 'C', 'X', 'Y', 'Z']
+steppers = ['A', 'B', 'C']
+pumps = ['X', 'Y', 'Z']
 
 stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
@@ -28,7 +29,6 @@ class GeneralObject():
 		ser.reset_input_buffer()
 		print(msg, response)
 		return response
-
 
 
 	def turn_on(objID): # for latches and actuators only
@@ -48,6 +48,12 @@ class GeneralObject():
 			send_comm(f'{objID}{step}')
 		else:
 			print('Cannot move this object- this object is not an motor')
+
+	def run_pump(objID,speed):
+		if objID in pumps:
+			send_comm(f'{objID} {speed}')
+		else:
+			print('Cannot run this object- this object is not a pump')
 
 
 class BobaMachine():
@@ -97,15 +103,7 @@ class BobaMachine():
 
 	def dispense_liquids():
 		'''dispense all the liquids and syrups'''
-		tea_dispense = 1
-		response = self.B.move_motor(tea_dispense)
-		shot1 = 1
-		response = self.X.move_motor(shot1)
-		shot2 = 1
-		response = self.Y.move_motor(shot2)
-		syrup = 1
-		response = self.Z.move_motor(syrup)
-		
+		pass
 
 
 	def make_boba(self):
