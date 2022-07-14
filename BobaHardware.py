@@ -1,6 +1,5 @@
 import serial
 
-
 # ---- KEY
 # rice cooker = R
 # latch = L
@@ -43,9 +42,9 @@ class GeneralObject():
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def move_motor(objID,step):
+	def move_motor(objID,accel):
 		if objID in steppers:
-			send_comm(f'{objID}{step}')
+			send_comm(f'{objID}91 {accel}')
 		else:
 			print('Cannot move this object- this object is not an motor')
 
@@ -69,9 +68,11 @@ class BobaMachine():
 	    self.Z = GeneralObject('Z')
 	
 	def test_code(self):
-	    msg = input('Message? ')
-	    print(msg, type(msg))
-	    self.ser.write(msg.encode())
+	    # msg = input('Message? ')
+	    # print(msg, type(msg))
+	    # self.ser.write(msg.encode())
+	    self.C.move_motor(1)
+
 
 
 	def update(self, order_queue):
@@ -118,4 +119,5 @@ if __name__ == "__main__":
 	bob4 = BobaMachine()
 	bob4.test_code()
 	# bob4.make_boba()
+
 
