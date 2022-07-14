@@ -51,7 +51,8 @@ class BobaMachine():
 	    msg = input('Message? ')
 	    command = self.ser.write(msg.encode())
 	    line = self.ser.readline().decode('utf-8').rstrip()
-	    print(command, line)
+	    print(command)
+	    print(line)
 
 
 	def update(self, order_queue):
