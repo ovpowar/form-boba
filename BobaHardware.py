@@ -3,10 +3,9 @@ import serial
 actuators = ['R', 'L']
 steppers = ['A', 'B', 'C', 'X', 'Y', 'Z']
 
-class GeneralObject(ser,objID):
+class GeneralObject(objID):
 	def __init__(self):
 		self.objID = objID
-
 
 	def send_comm(self, msg):
 		command = self.ser.write(msg.encode())
@@ -19,7 +18,6 @@ class GeneralObject(ser,objID):
 		finally:
 			print(line)
 			ser.reset_input_buffer()
-
 
 	def turn_on(objID): # for latches and actuators only
 		if objID in actuator:
