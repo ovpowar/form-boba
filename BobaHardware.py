@@ -48,7 +48,7 @@ class BobaMachine():
 					# stopbits=serial.STOPBITS_ONE)
 	    #ser.port = 'COM4'
 	    # TESTING ONLY
-	def test_code(self)
+	def test_code(self):
 	    msg = input('Message? ')
 	    command = self.ser.write(msg.encode())
 	    line = self.ser.readline().decode('utf-8').rstrip()
