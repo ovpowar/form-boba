@@ -29,6 +29,8 @@ class GeneralObject():
 		print(msg, response)
 		return response
 
+
+
 	def turn_on(objID): # for latches and actuators only
 		if objID in actuators:
 			send_comm(f'{objID}1')
@@ -50,7 +52,7 @@ class GeneralObject():
 
 class BobaMachine():
 	def __init__(self):
-	    self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+	    self.ser = serial.Serial('/dev/ttyUSB1', 115200)
 	    self.R = GeneralObject('R')
 	    self.L = GeneralObject('L')
 	    self.A = GeneralObject('A')
@@ -62,10 +64,8 @@ class BobaMachine():
 	
 	def test_code(self):
 	    msg = input('Message? ')
-	    command = self.ser.write(msg.encode())
-	    line = self.ser.readline().decode('utf-8').rstrip()
-	    print(command)
-	    print(line)
+	    print(msg, type(msg))
+	    self.ser.write(msg.encode())
 
 
 	def update(self, order_queue):
@@ -91,7 +91,7 @@ class BobaMachine():
 		latch_steps = 10 # what is this irl? steps up to release the latch
 		latch_range_angle = 90 #deg range of motion of the latch
 		steps = latch_range_angle / stepper_conversion
-		response = self.A.move_motor(latch_steps)
+		response = self.A.turn_off()
 		time.sleep(5)
 		response = self.A.move_motor(steps)
 
@@ -114,6 +114,7 @@ class BobaMachine():
 		self.transfer_boba() # move boba to the cup
 		self.latch() # move the latch and lid
 		self.dispense_liquids() # dispense all off the liquids
+
 
 if __name__ == "__main__":
 	bob4 = BobaMachine()
