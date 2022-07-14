@@ -9,14 +9,16 @@ class GeneralObject(ser,objID):
 
 
 	def send_comm(self, msg):
-		ser.write(b'{msg}')
+		command = self.ser.write(msg.encode())
 		# some encoding / decoding
 		try: # something like this??
-			response = ser.readline()
+			#response = ser.readline()
+			line = ser.readline().decode('utf-8').rstrip()
 		except:
 			print('?')
 		finally:
-			print(response)
+			print(line)
+			ser.reset_input_buffer()
 
 
 	def turn_on(objID): # for latches and actuators only
@@ -39,15 +41,18 @@ class GeneralObject(ser,objID):
 
 class BobaMachine():
 	def __init__(self):
-	    ser = serial.Serial('dev/ttyUSB',
-                    baudrate=9600,
-					parity=serial.PARITY_NONE,
-					stopbits=serial.STOPBITS_ONE)
-	    ser.port = 'COM4'
+	    self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+	    # ser = serial.Serial('dev/ttyUSB',
+     #                baudrate=9600,
+					# parity=serial.PARITY_NONE,
+					# stopbits=serial.STOPBITS_ONE)
+	    #ser.port = 'COM4'
 	    # TESTING ONLY
-	    ser.write(b'L1')
-	    response = ser.readline()
-	    print(response)
+	def test_code(self)
+	    msg = input('Message? ')
+	    command = self.ser.write(msg.encode())
+	    line = self.ser.readline().decode('utf-8').rstrip()
+	    print(line)
 
 
 	def update(self, order_queue):
