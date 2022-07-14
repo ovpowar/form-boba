@@ -39,7 +39,7 @@ class GeneralObject():
 
 class BobaMachine():
 	def __init__(self):
-	    self.ser = serial.Serial('/dev/ttyUSB', 9600, timeout=1)
+	    self.ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
 	    # ser = serial.Serial('dev/ttyUSB',
      #                baudrate=9600,
 					# parity=serial.PARITY_NONE,
