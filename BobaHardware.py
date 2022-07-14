@@ -3,8 +3,8 @@ import serial
 actuators = ['R', 'L']
 steppers = ['A', 'B', 'C', 'X', 'Y', 'Z']
 
-class GeneralObject(objID):
-	def __init__(self):
+class GeneralObject():
+	def __init__(self,objID):
 		self.objID = objID
 
 	def send_comm(self, msg):
