@@ -22,6 +22,7 @@ class Comms():
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
 	def send_comm(self, msg):
+		print(msg)
 		response = self.ser.write(msg.encode())
 		self.ser.reset_input_buffer()
 		print(msg, response)
@@ -51,7 +52,7 @@ class GeneralObject():
 	def move_motor(self,accel,speed,revs):
 		print(self.objID, self.obj_type)
 		if self.obj_type == 'stepper':
-			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s
+			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
 			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
@@ -59,7 +60,7 @@ class GeneralObject():
 
 	def run_pump(self,accel,speed,revs):
 		if self.obj_type == 'pump':
-			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s
+			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
 			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
@@ -102,20 +103,21 @@ class BobaMachine():
 	
 	def test_code(self):
 	    print("HELLO")
-	    test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
-	    actuator_list = [self.L, self.R]
-	    msg0 = input('M (motor) or A (actuator)? ')
-	    if msg0 == 'M':
-		    i = input('Choose device? 0-5 for ABCXYZ ')
-		    msg1 = input('Accel in mmps2: ')
-		    msg2 = input('Speed in rev/s: ')
-		    msg3 = input('Num revs: ')
-		    test_list[int(i)].move_motor(int(msg1), int(msg2), int(msg3))
-	    if msg0 == 'A':
-		    msg0 = input('Choose device? 0-1 for LR ')
-		    test_list[int(i)].turn_on()
-		    time.sleep(5)
-		    test_list[intt(i)].turn_off()
+	    self.C.move_motor(120000,40000,7)
+	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
+	    # actuator_list = [self.L, self.R]
+	    # msg0 = input('M (motor) or A (actuator)? ')
+	    # if msg0 == 'M':
+		   #  i = input('Choose device? 0-5 for ABCXYZ ')
+		   #  msg1 = input('Accel in mmps2: ')
+		   #  msg2 = input('Speed in rev/s: ')
+		   #  msg3 = input('Num revs: ')
+		   #  test_list[int(i)].move_motor(int(msg1), int(msg2), int(msg3))
+	    # if msg0 == 'A':
+		   #  msg0 = input('Choose device? 0-1 for LR ')
+		   #  test_list[int(i)].turn_on()
+		   #  time.sleep(5)
+		   #  test_list[intt(i)].turn_off()
 
 	def update_flavors(self, f1, f2):
 		if f1 is not None:
