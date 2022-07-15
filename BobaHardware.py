@@ -11,8 +11,6 @@ import time
 # shot dispenser 2 = Y
 # simple syrup = Z
 
-
-
 stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
@@ -23,6 +21,7 @@ class Comms():
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
 	def send_comm(self, msg):
+		self.ser.flush()
 		msg = msg+'\n'
 		msg = bytes(msg, 'utf-8')
 		# print(msg)
@@ -35,39 +34,38 @@ class GeneralObject():
 		self.obj_type = obj_type
 		self.speed = speed
 		self.accel = accel
-		self.comm = Comms()
 
-	def turn_on(self): # for latches and actuators only
+	def turn_on(self,comm): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			self.comm.send_comm('B1'+ str(self.objID)+' 1')
+			comm.send_comm('B1'+ str(self.objID)+' 1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def turn_off(self): # for latches and actuators only
+	def turn_off(self,comm): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			self.comm.send_comm(f'B1 {self.objID} 0')
+			comm.send_comm(f'B1 {self.objID} 0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def move_motor(self,accel,speed,revs):
+	def move_motor(self,comm,accel,speed,revs):
 		if self.obj_type == 'stepper':
 			# self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
-			time.sleep(5)
-			self.comm.send_comm('B92 '+str(self.objID)+' '+str(accel)) # set speed in mm/s2
-			time.sleep(5)
-			self.comm.send_comm('B91 '+str(self.objID)+' '+str(speed)) # set speed in mm/s
+			time.sleep(10)
+			comm.send_comm('B92 '+str(self.objID)+' '+str(accel)) # set speed in mm/s2
+			time.sleep(10)
+			comm.send_comm('B91 '+str(self.objID)+' '+str(speed)) # set speed in mm/s
 			# self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			time.sleep(5)
-			self.comm.send_comm('B0 '+str(self.objID)+' '+str(revs)) #stepper move in rev
+			time.sleep(10)
+			comm.send_comm('B0 '+str(self.objID)+' '+str(revs)) #stepper move in rev
 			# self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
-	def run_pump(self,accel,speed,revs):
+	def run_pump(self,comm,accel,speed,revs):
 		if self.obj_type == 'pump':
-			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
-			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
+			comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
+			comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
+			comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot run this object- this object is not a pump')
 
@@ -104,12 +102,13 @@ class BobaMachine():
 	    self.flavors = {}
 	    self.status = "Ready"
 	    self.update_flavors("PassionFruit", "Mango")
+	    self.comm = Comms()
 
 	
 	def test_code(self):
 	    print("HELLO")
 	    # self.L.turn_on()
-	    self.C.move_motor(120000,40000,7)
+	    self.C.move_motor(self.comm,120000,40000,7)
 	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
 	    # actuator_list = [self.L, self.R]
 	    # msg0 = input('M (motor) or A (actuator)? ')
