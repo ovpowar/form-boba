@@ -22,9 +22,10 @@ class Comms():
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
 	def send_comm(self, msg):
+		msg = msg+'\n'
 		print(msg)
 		response = self.ser.write(msg.encode())
-		self.ser.reset_input_buffer()
+		# self.ser.reset_input_buffer()
 		print(msg, response)
 		return response	
 
