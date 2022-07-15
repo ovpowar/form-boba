@@ -109,6 +109,7 @@ class BobaMachine():
 	    self.C.move_motor(self.comm,120000,40000,7)
 	    print(self.comm.ser)
 	    self.comm.ser.close()
+	    print(self.comm.ser)
 	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
 	    # actuator_list = [self.L, self.R]
 	    # msg0 = input('M (motor) or A (actuator)? ')
