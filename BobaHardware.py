@@ -25,7 +25,7 @@ class Comms():
 	def send_comm(self, msg):
 		msg = msg+'\n'
 		msg = bytes(msg, 'utf-8')
-		print(msg)
+		# print(msg)
 		self.ser.write(msg)
 		# self.ser.reset_input_buffer()
 
