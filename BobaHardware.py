@@ -21,6 +21,7 @@ class Comms():
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
 	def send_comm(self, msg):
+		self.ser.flush()
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
@@ -54,7 +55,6 @@ class GeneralObject():
 			time.sleep(5)
 			com.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
 			# self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			com.ser.flush()
 			time.sleep(5)
 			com.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
 			# self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
