@@ -10,112 +10,71 @@ import serial
 # shot dispenser 2 = Y
 # simple syrup = Z
 
+actuators = ['R', 'L']
+steppers = ['A', 'B', 'C']
+pumps = ['X', 'Y', 'Z']
+
 stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
 
+class GeneralObject():
+	def __init__(self,objID):
+		self.objID = objID
 
-class Comms():
-	def __init__(self):
-		self.ser = serial.Serial('/dev/ttyUSB1', 115200)
-	
 	def send_comm(self, msg):
 		response = self.ser.write(msg.encode())
 		ser.reset_input_buffer()
 		print(msg, response)
-		return response	
-
-
-class GeneralObject():
-	def __init__(self,objID, obj_type):
-		self.objID = objID
-		self.obj_type = obj_type
-		self.comm = Comms()
+		return response
 
 
 	def turn_on(objID): # for latches and actuators only
-		if obj_type == 'actuator':
+		if objID in actuators:
 			send_comm(f'{objID}1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def turn_off(objID): # for latches and actuators only
-		if obj_type == 'actuator':
+		if objID in actuators:
 			send_comm(f'{objID}0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def move_motor(objID,accel):
-		if obj_type == 'stepper':
+		if objID in steppers:
 			send_comm(f'{objID}91 {accel}')
 		else:
-			print('Cannot move this object- this object is not an stepper')
+			print('Cannot move this object- this object is not an motor')
 
 	def run_pump(objID,speed):
-		if obj_type == 'pump':
+		if objID in pumps:
 			send_comm(f'{objID} {speed}')
 		else:
 			print('Cannot run this object- this object is not a pump')
 
 
-class OrderQueue():
-	def __init__(self):
-		self.q = []
-
-	def update(self, order):
-		self.q.append(order)
-
-	def update_sequence(self):
-		k = 0
-		for i in self.q:
-			k +=1
-			i['queue_number'] = k
-
-	def remove_order_number(self, number):
-		self.q.pop(number-1)
-		self.update_sequence()
-
 class BobaMachine():
 	def __init__(self):
-	    self.R = GeneralObject('R','actuator')
-	    self.L = GeneralObject('L','actuator')
-	    self.A = GeneralObject('A', 'stepper')
-	    self.B = GeneralObject('B', 'pump')
-	    self.C = GeneralObject('C', 'stepper')
-	    self.X = GeneralObject('X', 'pump')
-	    self.Y = GeneralObject('Y', 'pump')
-	    self.Z = GeneralObject('Z', 'pump')
-	    self.order_queue = OrderQueue()
-	    self.flavors = {}
-	    self.status = "Ready"
-	    self.update_flavors("PassionFruit", "Mango")
-
+	    self.ser = serial.Serial('/dev/tty.usbserial-0001', 115200)
+	    self.R = GeneralObject('R')
+	    self.L = GeneralObject('L')
+	    self.A = GeneralObject('A')
+	    self.B = GeneralObject('B')
+	    self.C = GeneralObject('C')
+	    self.X = GeneralObject('X')
+	    self.Y = GeneralObject('Y')
+	    self.Z = GeneralObject('Z')
 	
-	def update_flavors(self, f1, f2):
-		if f1 is not None:
-			self.flavors['shot1'] = f1
-		if f2 is not None:
-			self.flavors['shot2'] = f2
-
-	def check_order(self, number):
-		if self.order_queue.q[number - 1]["status"] == "Queued":
-			if self.status == "Ready":
-				return "Ready"
-			else:
-				return "Wait"
-
-	def start_preparing_order(self, order):
-		self.order_queue.q[order]["status"] = "Cooking"
-
 	def test_code(self):
 	    # msg = input('Message? ')
 	    # print(msg, type(msg))
 	    # self.ser.write(msg.encode())
-	    print("HELLO")
 	    self.C.move_motor(1)
 
+
+
 	def update(self, order_queue):
-		self.order_queue = order_queue
 		print(order_queue)
 
 	def initialize_boba(self):

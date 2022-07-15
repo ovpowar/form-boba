@@ -1,0 +1,96 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Order Form {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <main>
+        <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+            <div class="container">
+                <p class="text-center">
+                    Form-Boba
+                </p>
+                <div class="row justify-content-center form-bg-image" data-background-lg="/static/assets/img/illustrations/bs5-illustrations.svg">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3">
+                                    Boba Ordering Form
+                                </h1>
+                                <br />
+                                <p>
+                                    {% if msg %}
+                                        {{ msg | safe }}
+                                    {% else %}
+                                        Place your order
+                                    {% endif %}                                     
+                                </p> 
+                            </div>
+                            <form method="post" action="" class="mt-4" enctype="multipart/form-data">
+                                {{ form.hidden_tag() }}
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="email">Order Name</label>
+                                    <div class="input-group">
+                                        {{ form.ordername(placeholder="Jane Doe", class="form-control") }}
+                                    </div>  
+                                </div>
+                                <!-- End of Form -->
+                                <div class="form-group">
+                                    <!-- Boba -->
+                                    <div class="form-group mb-4">
+                                        <div class="form-check">
+                                            {{ form.tapioca_pearls( class="form-check-input") }}
+                                            <label class="form-check-label mb-0" for="pearls">Boba?</label>
+                                        </div>  
+                                    </div>
+                                    <!-- End of Boba -->
+                                    <!-- Syrup -->
+                                    <div class="form-group mb-4">
+                                        <div class="form-check">
+                                            {{ form.syrup(class="input-slider noUi-target noUi-ltr noUi-horizontal") }}
+                                            <label class="form-check-label mb-0" for="syrup">Syrup?</label>
+                                        </div>  
+                                    </div>
+                                    <!-- End of Syrup -->
+                                    <!-- Shot1 -->
+                                    <div class="form-group mb-4">
+                                        <div class="form-check">
+                                            {{ form.shot1( class="form-check-input") }}
+                                            <label class="form-check-label mb-0" for="shot1">{{form.shot1.label.text}}</label>
+                                        </div>  
+                                    </div>
+                                    <!-- End of Shot1 -->
+                                    <!-- Shot2 -->
+                                    <div class="form-group mb-4">
+                                        <div class="form-check">
+                                            {{ form.shot2( class="form-check-input") }}
+                                            <label class="form-check-label mb-0" for="shot2">{{form.shot2.label.text}}</label>
+                                        </div>
+                                    </div>
+                                    <!-- End of Shot2 -->
+
+
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" name="login" class="btn btn-gray-800">Submit Order</button>
+                                </div>
+                            </form>
+                            <br />
+
+                            <div class="d-flex justify-content-center align-items-center mt-4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
