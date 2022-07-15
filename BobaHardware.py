@@ -23,7 +23,7 @@ class Comms():
 	
 	def send_comm(self, msg):
 		response = self.ser.write(msg.encode())
-		# self.ser.reset_input_buffer()
+		self.ser.reset_input_buffer()
 		print(msg, response)
 		return response	
 
@@ -110,7 +110,7 @@ class BobaMachine():
 		    msg1 = input('Accel in mmps2: ')
 		    msg2 = input('Speed in rev/s: ')
 		    msg3 = input('Num revs: ')
-		    test_list[int(i)].move_motor(msg1, msg2, msg3)
+		    test_list[int(i)].move_motor(int(msg1), int(msg2), int(msg3))
 	    if msg0 == 'A':
 		    msg0 = input('Choose device? 0-1 for LR ')
 		    test_list[int(i)].turn_on()
