@@ -37,27 +37,27 @@ class GeneralObject():
 
 	def turn_on(): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			send_comm(f'B1 {self.objID} 1')
+			self.comm.send_comm(f'B1 {self.objID} 1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def turn_off(): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			send_comm(f'B1 {self.objID} 0')
+			self.comm.send_comm(f'B1 {self.objID} 0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def move_motor(speed,revs):
 		if self.obj_type == 'stepper':
-			send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
-			send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
+			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
+			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
 	def run_pump(speed,revs):
 		if self.obj_type == 'pump':
-			send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
-			send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
+			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
+			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot run this object- this object is not a pump')
 
