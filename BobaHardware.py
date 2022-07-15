@@ -85,14 +85,14 @@ class OrderQueue():
 
 class BobaMachine():
 	def __init__(self):
-	    self.R = GeneralObject('R','actuator',0)
-	    self.L = GeneralObject('L','actuator',0)
-	    self.A = GeneralObject('A','stepper',0.5)
-	    self.B = GeneralObject('B','pump',0.5)
-	    self.C = GeneralObject('C','stepper',0.5)
-	    self.X = GeneralObject('X','pump',0.5)
-	    self.Y = GeneralObject('Y','pump',0.5)
-	    self.Z = GeneralObject('Z','pump',0.5)
+	    self.R = GeneralObject('R','actuator',0,0)
+	    self.L = GeneralObject('L','actuator',0,0)
+	    self.A = GeneralObject('A','stepper',0.5,40000)
+	    self.B = GeneralObject('B','pump',0.5,40000)
+	    self.C = GeneralObject('C','stepper',0.5,40000)
+	    self.X = GeneralObject('X','pump',0.5,40000)
+	    self.Y = GeneralObject('Y','pump',0.5,40000)
+	    self.Z = GeneralObject('Z','pump',0.5,40000)
 	    self.order_queue = OrderQueue()
 	    self.flavors = {}
 	    self.status = "Ready"
