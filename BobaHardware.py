@@ -61,7 +61,7 @@ class GeneralObject():
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
-	def run_pump(self,accel,speed,rev/s):
+	def run_pump(self,accel,speed,revs):
 		if self.obj_type == 'pump':
 			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
