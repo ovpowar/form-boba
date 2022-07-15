@@ -55,9 +55,26 @@ class GeneralObject():
 			print('Cannot run this object- this object is not a pump')
 
 
+class OrderQueue():
+	def __init__(self):
+		self.q = []
+
+	def update(self, order):
+		self.q.append(order)
+
+	def update_sequence(self):
+		k = 0
+		for i in self.q:
+			k +=1
+			i['queue_number'] = k
+
+	def remove_order_number(self, number):
+		self.q.pop(number-1)
+		self.update_sequence()
+
 class BobaMachine():
 	def __init__(self):
-	    self.ser = serial.Serial('/dev/ttyUSB1', 115200)
+	    # self.ser = serial.Serial('/dev/tty.usbserial-0001', 115200)
 	    self.R = GeneralObject('R')
 	    self.L = GeneralObject('L')
 	    self.A = GeneralObject('A')
@@ -66,16 +83,36 @@ class BobaMachine():
 	    self.X = GeneralObject('X')
 	    self.Y = GeneralObject('Y')
 	    self.Z = GeneralObject('Z')
+	    self.order_queue = OrderQueue()
+	    self.flavors = {}
+	    self.status = "Ready"
+	    self.update_flavors("PassionFruit", "Mango")
 	
+	def update_flavors(self, f1, f2):
+		if f1 is not None:
+			self.flavors['shot1'] = f1
+		if f2 is not None:
+			self.flavors['shot2'] = f2
+
+	def check_order(self, number):
+		if self.order_queue.q[number - 1]["status"] == "Queued":
+			if self.status == "Ready":
+				return "Ready"
+			else:
+				return "Wait"
+
+	def start_preparing_order(self, order):
+		self.order_queue.q[order]["status"] = "Cooking"
+
 	def test_code(self):
 	    # msg = input('Message? ')
 	    # print(msg, type(msg))
 	    # self.ser.write(msg.encode())
+	    print("HELLO")
 	    self.C.move_motor(1)
 
-
-
 	def update(self, order_queue):
+		self.order_queue = order_queue
 		print(order_queue)
 
 	def initialize_boba(self):

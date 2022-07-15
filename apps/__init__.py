@@ -4,41 +4,11 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from importlib import import_module
-from BobaHardware import BobaMachine
 
-db = SQLAlchemy()
+app = Flask(__name__)
+from . import forms, routes
 
-
-def register_extensions(app):
-    db.init_app(app)
-    #login_manager.init_app(app)
-
-
-def register_blueprints(app):
-    for module_name in (['home']):
-        module = import_module('apps.{}.routes'.format(module_name))
-        app.register_blueprint(module.blueprint)
-
-
-def configure_database(app):
-
-    @app.before_first_request
-    def initialize_database():
-        db.create_all()
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        db.session.remove()
-
-
-def create_app(config):
-    app = Flask(__name__)
+def create_app(config, boba_machine):
     app.config.from_object(config)
-    register_extensions(app)
-    register_blueprints(app)
-    configure_database(app)
-    # boba_machine = BobaMachine()
-    # app.boba_machine = boba_machine
+    app.boba_machine = boba_machine
     return app
