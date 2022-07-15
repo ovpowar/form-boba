@@ -25,9 +25,6 @@ class Comms():
 		msg = msg+'\r\n'
 		response = self.ser.write(msg.encode())
 		# self.ser.reset_input_buffer()
-		print(msg, response)
-		return response	
-
 
 class GeneralObject():
 	def __init__(self,objID,obj_type,speed,accel):
