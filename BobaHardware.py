@@ -20,12 +20,12 @@ class Comms():
 	def __init__(self):
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
-	def send_comm(self,comm, msg):
+	def send_comm(self,comm,msg):
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
-		self.ser.write(msg2)
-		self.ser.flush()
+		comm.write(msg2)
+		comm.flush()
 		# self.ser.reset_input_buffer()
 
 class GeneralObject():
