@@ -101,12 +101,12 @@ class BobaMachine():
 	    test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
 	    actuator_list = [self.L, self.R]
 	    msg0 = input('M (motor) or A (actuator)? ')
-	    if msg0 == 'M'
+	    if msg0 == 'M':
 		    msg0 = input('Choose device? 0-5 for ABCXYZ ')
 		    msg1 = input('Speed in rev/s: ')
 		    msg2 = input('Num revs: ')
 		    test_list[i].move_motor(msg1, msg2)
-	    if msg0 == 'A'
+	    if msg0 == 'A':
 		    msg0 = input('Choose device? 0-1 for LR ')
 		    test_list[i].turn_on()
 		    time.sleep(5)
