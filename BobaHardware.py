@@ -23,7 +23,7 @@ class Comms():
 	
 	def send_comm(self, msg):
 		response = self.ser.write(msg.encode())
-		ser.reset_input_buffer()
+		# self.ser.reset_input_buffer()
 		print(msg, response)
 		return response	
 
