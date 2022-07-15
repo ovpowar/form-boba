@@ -108,7 +108,7 @@ class BobaMachine():
 	def test_code(self):
 	    print("HELLO")
 	    # self.L.turn_on()
-	    self.C.move_motor(self.comm,120000,40000,7)
+	    self.C.move_motor(self.comm,120000,40000,-7)
 	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
 	    # actuator_list = [self.L, self.R]
 	    # msg0 = input('M (motor) or A (actuator)? ')
