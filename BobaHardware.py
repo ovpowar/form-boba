@@ -29,10 +29,11 @@ class Comms():
 
 
 class GeneralObject():
-	def __init__(self,objID, obj_type,speed):
+	def __init__(self,objID,obj_type,speed,accel):
 		self.objID = objID
 		self.obj_type = obj_type
 		self.speed = speed
+		self.accel = accel
 		self.comm = Comms()
 
 	def turn_on(): # for latches and actuators only
@@ -47,15 +48,17 @@ class GeneralObject():
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def move_motor(speed,revs):
+	def move_motor(accel,speed,revs):
 		if self.obj_type == 'stepper':
+			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in rev/s
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
 			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
-	def run_pump(speed,revs):
+	def run_pump(accel,speed,revs):
 		if self.obj_type == 'pump':
+			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in rev/s
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
 			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
@@ -102,15 +105,16 @@ class BobaMachine():
 	    actuator_list = [self.L, self.R]
 	    msg0 = input('M (motor) or A (actuator)? ')
 	    if msg0 == 'M':
-		    msg0 = input('Choose device? 0-5 for ABCXYZ ')
-		    msg1 = input('Speed in rev/s: ')
-		    msg2 = input('Num revs: ')
-		    test_list[i].move_motor(msg1, msg2)
+		    i = input('Choose device? 0-5 for ABCXYZ ')
+		    msg1 = input('Accel in mmps2: ')
+		    msg2 = input('Speed in rev/s: ')
+		    msg3 = input('Num revs: ')
+		    test_list[int(i)].move_motor(msg1, msg2, msg3)
 	    if msg0 == 'A':
 		    msg0 = input('Choose device? 0-1 for LR ')
-		    test_list[i].turn_on()
+		    test_list[int(i)].turn_on()
 		    time.sleep(5)
-		    test_list[i].turn_off()
+		    test_list[intt(i)].turn_off()
 
 	def update_flavors(self, f1, f2):
 		if f1 is not None:
@@ -138,7 +142,7 @@ class BobaMachine():
 		self.transfer_boba() # lifts the lid
 		dispense_angle = 95
 		steps = dispense_angle / stepper_conversion
-		response = self.C.move_motor(step_size) # dispense the boba into the rice cooker
+		response = self.C.move_motor(self.C.accel,self.C.speed,steps) # dispense the boba into the rice cooker
 		self.R.turn_on() # turn on the rice cooker
 		time.sleep(cooking_time*60) # cooking the boba time
 		self.R.turn_off() # turn of the rice cooker
@@ -148,9 +152,9 @@ class BobaMachine():
 	def transfer_boba(self):
 		transfer_angle = 180
 		steps = dispense_angle / stepper_conversion
-		response = self.A.move_motor(step_size) # dump out the boba
+		response = self.A.move_motor(self.A.accel,self.A.speed,steps) # dump out the boba
 		time.sleep(transfer_time)
-		response = self.A.move_motor(-step_size) # return the basket
+		response = self.A.move_motor(self.A.accel,self.A.speed,-steps) # return the basket
 
 	def release_latch(self):
 		response = self.L.turn_off()
@@ -159,19 +163,19 @@ class BobaMachine():
 		tea_volume = 250 #mL
 		dose = 15 #mL/rev
 		revs = tea_volume/dose
-		self.B.run_pump(self.B.speed,revs)
+		self.B.run_pump(self.B.accel, self.B.speed,revs)
 
 	def dispense_syrup(syrup_level):
 		syrup_factor = 2 #100% / 50mL
 		dose = 15 #mL/rev
 		revs = syrup_factor/syrup_level/dose
-		self.Z.run_pump(self.Z.speed,revs)
+		self.Z.run_pump(self.Z.accel,self.Z.speed,revs)
 
 	def dispense_flavors(flavor,which_pump):
 		flavor_vol = 15 #mL
 		dose = 15 #mL/rev
 		revs = flavor_vol/dose
-		which_pump.run_pump(self.which_pump.speed,revs)
+		which_pump.run_pump(self.which_pump.accel,self.which_pump.speed,revs)
 
 	def make_boba(self, current_order):
 		if current_order['is_tapioca']:
