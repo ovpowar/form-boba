@@ -10,46 +10,49 @@ import serial
 # shot dispenser 2 = Y
 # simple syrup = Z
 
-actuators = ['R', 'L']
-steppers = ['A', 'B', 'C']
-pumps = ['X', 'Y', 'Z']
-
 stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
 
 
-class GeneralObject():
-	def __init__(self,objID):
-		self.objID = objID
-
+class Comms():
+	def __init__(self):
+		self.ser = serial.Serial('/dev/ttyUSB1', 115200)
+	
 	def send_comm(self, msg):
 		response = self.ser.write(msg.encode())
 		ser.reset_input_buffer()
 		print(msg, response)
-		return response
+		return response	
+
+
+class GeneralObject():
+	def __init__(self,objID, obj_type):
+		self.objID = objID
+		self.obj_type = obj_type
+		self.comm = Comms()
 
 
 	def turn_on(objID): # for latches and actuators only
-		if objID in actuators:
+		if obj_type == 'actuator':
 			send_comm(f'{objID}1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def turn_off(objID): # for latches and actuators only
-		if objID in actuators:
+		if obj_type == 'actuator':
 			send_comm(f'{objID}0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def move_motor(objID,accel):
-		if objID in steppers:
+		if obj_type == 'stepper':
 			send_comm(f'{objID}91 {accel}')
 		else:
-			print('Cannot move this object- this object is not an motor')
+			print('Cannot move this object- this object is not an stepper')
 
 	def run_pump(objID,speed):
-		if objID in pumps:
+		if obj_type == 'pump':
 			send_comm(f'{objID} {speed}')
 		else:
 			print('Cannot run this object- this object is not a pump')
@@ -57,15 +60,14 @@ class GeneralObject():
 
 class BobaMachine():
 	def __init__(self):
-	    self.ser = serial.Serial('/dev/ttyUSB1', 115200)
-	    self.R = GeneralObject('R')
-	    self.L = GeneralObject('L')
-	    self.A = GeneralObject('A')
-	    self.B = GeneralObject('B')
-	    self.C = GeneralObject('C')
-	    self.X = GeneralObject('X')
-	    self.Y = GeneralObject('Y')
-	    self.Z = GeneralObject('Z')
+	    self.R = GeneralObject('R','actuator')
+	    self.L = GeneralObject('L','actuator')
+	    self.A = GeneralObject('A', 'stepper')
+	    self.B = GeneralObject('B', 'pump')
+	    self.C = GeneralObject('C', 'stepper')
+	    self.X = GeneralObject('X', 'pump')
+	    self.Y = GeneralObject('Y', 'pump')
+	    self.Z = GeneralObject('Z', 'pump')
 	
 	def test_code(self):
 	    # msg = input('Message? ')
