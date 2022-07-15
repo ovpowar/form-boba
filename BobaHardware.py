@@ -24,7 +24,9 @@ class Comms():
 	
 	def send_comm(self, msg):
 		msg = msg+'\n'
-		msg = bytes(msg, 'utf-8')
+		print(msg)
+		msg = to_bytes(msg, 'utf-8')
+		print(msg)
 		self.ser.write(msg)
 		self.ser.reset_input_buffer()
 
@@ -49,7 +51,6 @@ class GeneralObject():
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def move_motor(self,accel,speed,revs):
-		print(self.objID, self.obj_type)
 		if self.obj_type == 'stepper':
 			# self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			self.comm.send_comm('B92 '+str(self.objID)+' '+str(accel)) # set speed in mm/s2
