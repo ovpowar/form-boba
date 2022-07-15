@@ -29,20 +29,21 @@ class Comms():
 
 
 class GeneralObject():
-	def __init__(self,objID, obj_type):
+	def __init__(self,objID, obj_type,speed):
 		self.objID = objID
 		self.obj_type = obj_type
+		self.speed = speed
 		self.comm = Comms()
 
 	def turn_on(): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			send_comm(f'B1 {self.objID} 1') # set speed in rev/s
+			send_comm(f'B1 {self.objID} 1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def turn_off(): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			send_comm(f'B1 {self.objID} 0') # set speed in rev/s
+			send_comm(f'B1 {self.objID} 0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
@@ -81,14 +82,14 @@ class OrderQueue():
 
 class BobaMachine():
 	def __init__(self):
-	    self.R = GeneralObject('R','actuator')
-	    self.L = GeneralObject('L','actuator')
-	    self.A = GeneralObject('A', 'stepper')
-	    self.B = GeneralObject('B', 'pump')
-	    self.C = GeneralObject('C', 'stepper')
-	    self.X = GeneralObject('X', 'pump')
-	    self.Y = GeneralObject('Y', 'pump')
-	    self.Z = GeneralObject('Z', 'pump')
+	    self.R = GeneralObject('R','actuator',0)
+	    self.L = GeneralObject('L','actuator',0)
+	    self.A = GeneralObject('A','stepper',0.5)
+	    self.B = GeneralObject('B','pump',0.5)
+	    self.C = GeneralObject('C','stepper',0.5)
+	    self.X = GeneralObject('X','pump',0.5)
+	    self.Y = GeneralObject('Y','pump',0.5)
+	    self.Z = GeneralObject('Z','pump',0.5)
 	    self.order_queue = OrderQueue()
 	    self.flavors = {}
 	    self.status = "Ready"
@@ -156,20 +157,21 @@ class BobaMachine():
 
 	def dispense_tea():
 		tea_volume = 250 #mL
-		speed = 15 #mL/rev
-		revs = tea_volume/speed
-		self.B.run_pump(speed,revs)
+		dose = 15 #mL/rev
+		revs = tea_volume/dose
+		self.B.run_pump(self.B.speed,revs)
 
 	def dispense_syrup(syrup_level):
 		syrup_factor = 2 #100% / 50mL
-		speed = 15 #mL/rev
-		revs = syrup_factor*speed
-		self.Z.run_pump(speed,revs)
+		dose = 15 #mL/rev
+		revs = syrup_factor/dose
+		self.Z.run_pump(self.Z.speed,revs)
 
 	def dispense_flavors(flavor,which_pump):
 		flavor_vol = 15 #mL
-		speed = 15 #mL/rev
-		which_pump.run_pump(speed,revs)
+		dose = 15 #mL/rev
+		revs = flavor_vol/dose
+		which_pump.run_pump(self.which_pump.speed,revs)
 
 	def make_boba(self, current_order):
 		if current_order['is_tapioca']:
