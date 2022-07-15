@@ -164,7 +164,7 @@ class BobaMachine():
 	def dispense_syrup(syrup_level):
 		syrup_factor = 2 #100% / 50mL
 		dose = 15 #mL/rev
-		revs = syrup_factor/dose
+		revs = syrup_factor/syrup_level/dose
 		self.Z.run_pump(self.Z.speed,revs)
 
 	def dispense_flavors(flavor,which_pump):
