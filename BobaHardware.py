@@ -1,4 +1,5 @@
 import serial
+import time
 
 # ---- KEY
 # rice cooker = R
@@ -24,7 +25,7 @@ class Comms():
 	def send_comm(self, msg):
 		msg = msg+'\n'
 		response = self.ser.write(msg.encode())
-		# self.ser.reset_input_buffer()
+		self.ser.reset_input_buffer()
 
 class GeneralObject():
 	def __init__(self,objID,obj_type,speed,accel):
@@ -36,7 +37,7 @@ class GeneralObject():
 
 	def turn_on(self): # for latches and actuators only
 		if self.obj_type == 'actuator':
-			self.comm.send_comm(f'B1 {self.objID} 1')
+			self.comm.send_comm('B1'+ str(self.objID)+' 1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
@@ -50,12 +51,17 @@ class GeneralObject():
 		print(self.objID, self.obj_type)
 		if self.obj_type == 'stepper':
 			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
-			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
+			self.comm.send_comm('B92 {self.objID} {accel}') # set speed in mm/s2
+			time.sleep(2)
+			self.comm.send_comm('B91 '+str(self.objID)+' '+str(speed)) # set speed in mm/s
+			# self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
+			time.sleep(2)
+			self.comm.send_comm('B0 '+str(self.objID)+' '+str(revs)) #stepper move in rev
+			# self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
-	def run_pump(self,accel,speed,revs):
+	def run_pump(self,accel,speed,rev/s):
 		if self.obj_type == 'pump':
 			self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
@@ -100,7 +106,7 @@ class BobaMachine():
 	
 	def test_code(self):
 	    print("HELLO")
-	    self.L.turn_on()
+	    # self.L.turn_on()
 	    self.C.move_motor(120000,40000,7)
 	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
 	    # actuator_list = [self.L, self.R]
