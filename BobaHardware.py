@@ -24,7 +24,8 @@ class Comms():
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
-		comm.write(msg2)
+		response = comm.write(msg2)
+		print(response)
 		comm.flush()
 		# self.ser.reset_input_buffer()
 
