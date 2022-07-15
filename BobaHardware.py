@@ -53,6 +53,7 @@ class GeneralObject():
 	def move_motor(self,accel,speed,revs):
 		if self.obj_type == 'stepper':
 			# self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
+			time.sleep(5)
 			self.comm.send_comm('B92 '+str(self.objID)+' '+str(accel)) # set speed in mm/s2
 			time.sleep(5)
 			self.comm.send_comm('B91 '+str(self.objID)+' '+str(speed)) # set speed in mm/s
