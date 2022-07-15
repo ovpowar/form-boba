@@ -198,6 +198,7 @@ class BobaMachine():
 if __name__ == "__main__":
 	bob4 = BobaMachine()
 	bob4.test_code()
+	bob4.comm.ser.close()
 
 	
 
