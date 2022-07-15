@@ -3,12 +3,14 @@ import serial
 # ---- KEY
 # rice cooker = R
 # latch = L
-# boba dispense = A
+# boba dispense (BF) = A
 # tea = B
-# raw boba dispense = C
+# raw boba dispense (RBD) = C
 # shot dispenser 1 = X
 # shot dispenser 2 = Y
 # simple syrup = Z
+
+
 
 stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
@@ -32,28 +34,29 @@ class GeneralObject():
 		self.obj_type = obj_type
 		self.comm = Comms()
 
-
-	def turn_on(objID): # for latches and actuators only
-		if obj_type == 'actuator':
-			send_comm(f'{objID}1')
+	def turn_on(): # for latches and actuators only
+		if self.obj_type == 'actuator':
+			send_comm(f'B1 {self.objID} 1') # set speed in rev/s
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def turn_off(objID): # for latches and actuators only
-		if obj_type == 'actuator':
-			send_comm(f'{objID}0')
+	def turn_off(): # for latches and actuators only
+		if self.obj_type == 'actuator':
+			send_comm(f'B1 {self.objID} 0') # set speed in rev/s
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
-	def move_motor(objID,accel):
-		if obj_type == 'stepper':
-			send_comm(f'{objID}91 {accel}')
+	def move_motor(speed,revs):
+		if self.obj_type == 'stepper':
+			send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
+			send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
-	def run_pump(objID,speed):
-		if obj_type == 'pump':
-			send_comm(f'{objID} {speed}')
+	def run_pump(speed,revs):
+		if self.obj_type == 'pump':
+			send_comm(f'B91 {self.objID} {speed}') # set speed in rev/s
+			send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot run this object- this object is not a pump')
 
@@ -75,6 +78,7 @@ class OrderQueue():
 		self.q.pop(number-1)
 		self.update_sequence()
 
+
 class BobaMachine():
 	def __init__(self):
 	    self.R = GeneralObject('R','actuator')
@@ -91,6 +95,22 @@ class BobaMachine():
 	    self.update_flavors("PassionFruit", "Mango")
 
 	
+	def test_code(self):
+	    print("HELLO")
+	    test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
+	    actuator_list = [self.L, self.R]
+	    msg0 = input('M (motor) or A (actuator)? ')
+	    if msg0 == 'M'
+		    msg0 = input('Choose device? 0-5 for ABCXYZ ')
+		    msg1 = input('Speed in rev/s: ')
+		    msg2 = input('Num revs: ')
+		    test_list[i].move_motor(msg1, msg2)
+	    if msg0 == 'A'
+		    msg0 = input('Choose device? 0-1 for LR ')
+		    test_list[i].turn_on()
+		    time.sleep(5)
+		    test_list[i].turn_off()
+
 	def update_flavors(self, f1, f2):
 		if f1 is not None:
 			self.flavors['shot1'] = f1
@@ -106,58 +126,67 @@ class BobaMachine():
 
 	def start_preparing_order(self, order):
 		self.order_queue.q[order]["status"] = "Cooking"
-
-	def test_code(self):
-	    # msg = input('Message? ')
-	    # print(msg, type(msg))
-	    # self.ser.write(msg.encode())
-	    print("HELLO")
-	    self.C.move_motor(1)
+		self.make_boba(self, self.order_queue.d[order])
+		self.order_queue.q[order]["status"] = "Finished"
 
 	def update(self, order_queue):
 		self.order_queue = order_queue
 		print(order_queue)
 
-	def initialize_boba(self):
-		'''dispenses boba and starts rice cooker'''
+	def cook_tapioca(self):
+		self.transfer_boba() # lifts the lid
 		dispense_angle = 95
 		steps = dispense_angle / stepper_conversion
-		response = self.C.move_motor(step_size)
-		self.R.turn_on()
-	
+		response = self.C.move_motor(step_size) # dispense the boba into the rice cooker
+		self.R.turn_on() # turn on the rice cooker
+		time.sleep(cooking_time*60) # cooking the boba time
+		self.R.turn_off() # turn of the rice cooker
+		self.transfer_boba()
+		self.release_latch()
+
 	def transfer_boba(self):
-		'''transfer the boba from ricee cooker to cup'''
 		transfer_angle = 180
 		steps = dispense_angle / stepper_conversion
-		response = self.A.move_motor(step_size)
+		response = self.A.move_motor(step_size) # dump out the boba
 		time.sleep(transfer_time)
-		response = self.A.move_motor(-step_size)
+		response = self.A.move_motor(-step_size) # return the basket
 
-	def latch(self):
-		'''release latch and lower lid'''
-		latch_steps = 10 # what is this irl? steps up to release the latch
-		latch_range_angle = 90 #deg range of motion of the latch
-		steps = latch_range_angle / stepper_conversion
-		response = self.A.turn_off()
-		time.sleep(5)
-		response = self.A.move_motor(steps)
+	def release_latch(self):
+		response = self.L.turn_off()
 
-	def dispense_liquids():
-		'''dispense all the liquids and syrups'''
-		pass
+	def dispense_tea():
+		tea_volume = 250 #mL
+		speed = 15 #mL/rev
+		revs = tea_volume/speed
+		self.B.run_pump(speed,revs)
 
+	def dispense_syrup(syrup_level):
+		syrup_factor = 2 #100% / 50mL
+		speed = 15 #mL/rev
+		revs = syrup_factor*speed
+		self.Z.run_pump(speed,revs)
 
-	def make_boba(self):
-		self.initialize_boba() # dispense the boba
-		time.sleep(cooking_time*60) # cooking the boba time
-		self.transfer_boba() # move boba to the cup
-		self.latch() # move the latch and lid
-		self.dispense_liquids() # dispense all off the liquids
+	def dispense_flavors(flavor,which_pump):
+		flavor_vol = 15 #mL
+		speed = 15 #mL/rev
+		which_pump.run_pump(speed,revs)
+
+	def make_boba(self, current_order):
+		if current_order['is_tapioca']:
+			self.cook_tapioca()
+		if current_order['is_shot1']: 
+			self.dispense_flavors(self.flavors['shot1'], self.X)
+		if current_order['is_shot2']:
+			self.dispense_flavors(self.flavors['shot2'], self.Y)
+		self.dispense_syrup(syrup_level)
+		self.dispense_tea()
+
 
 
 if __name__ == "__main__":
 	bob4 = BobaMachine()
 	bob4.test_code()
-	# bob4.make_boba()
+
+	
 
 
