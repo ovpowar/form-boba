@@ -19,7 +19,7 @@ transfer_time = 5 # seconds wait after flipping the basket
 
 class Comms():
 	def __init__(self):
-		self.ser = serial.Serial('/dev/ttyUSB1', 115200)
+		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
 	def send_comm(self, msg):
 		response = self.ser.write(msg.encode())
