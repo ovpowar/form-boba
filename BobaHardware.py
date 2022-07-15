@@ -23,7 +23,7 @@ class Comms():
 	def send_comm(self, msg):
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
-		print(msg)
+		print(msg2)
 		self.ser.write(msg2)
 		# self.ser.reset_input_buffer()
 
@@ -50,13 +50,13 @@ class GeneralObject():
 		if self.obj_type == 'stepper':
 			# self.comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			time.sleep(5)
-			comm.ser.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
+			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
 			time.sleep(5)
-			comm.ser.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
+			comm.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
 			# self.comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			comm.ser.flush()
+			comm.flush()
 			time.sleep(5)
-			comm.ser.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
+			comm.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
 			# self.comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
