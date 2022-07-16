@@ -52,7 +52,7 @@ class Relay:
 		self.id = bCodeID
 
 	def set_active(self, isActive):
-		self.comm.send_comm("B1 {} {}",format(self.id, 1 if isActive else 0))
+		self.comm.send_comm("B1 {} {}".format(self.id, 1 if isActive else 0))
 
 
 
@@ -162,28 +162,27 @@ class BobaMachine():
         self.Latch.set_active(False)
         time.sleep(1)
 
+    def calculate_dose(tea_volume):
+    	# dose = ? mL/rev
+    	return tea_volume/dose
+
     def dispense_tea():
         # tea_volume = 250 #mL
-        # dose = 15 #mL/rev
-        # revs = tea_volume/dose
         revolutions = calculate_dose(tea_volume)
         self.ShotDispense4.move(revolutions)
         time.sleep(2*revolutions)
 
     def dispense_syrup(syrup_level):
-        # syrup_factor = 2 #100% / 50mL
-        # dose = 15 #mL/rev
-        # revs = syrup_factor/syrup_level/dose
         Max_mL = 10
         syrup_vol = syrup_level/100*Max_mL
         revolutions = calculate_dose(syrup_vol)
         self.ShotDispense3.move(revolutions)
         time.sleep(revolutions*2)
 
-    def dispense_flavors(Pump):
+    def dispense_flavors(ShotDispense):
         flavor_vol = 15 #mL
         revolutions = calculate_dose(flavor_vol)
-        Pump.move(revolutions)
+        ShotDispense.move(revolutions)
         time.sleep(1*revolutions)
 
 
@@ -198,8 +197,24 @@ class BobaMachine():
         self.dispense_tea()
 
 
+    def test_motors():
+    	self.ShotDispense1.move(1)
+    	time.sleep(5)
+    	self.ShotDispense2.move(1)
+    	time.sleep(5)
+    	self.ShotDispense3.move(1)
+    	time.sleep(5)
+    	self.ShotDispense4.move(1)
+    	time.sleep(5)
+    	self.RawBobaDispenser.move(1)
+    	time.sleep(5)
+    	self.BobaFlipper.move(1)
+    	print("DONE")
+
+
 if __name__ == "__main__":
     bob4 = BobaMachine()
+    bob4.test_motors()
     
 
 
