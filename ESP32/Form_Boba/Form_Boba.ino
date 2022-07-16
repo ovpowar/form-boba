@@ -15,7 +15,7 @@ ESP_FlexyStepper bobaflipper;
 
 const int SD1_STEP = 15;
 const int SD2_STEP = 2;
-const int SD3_STEP = 0;
+const int SD3_STEP = 21;
 const int SD4_STEP = 4;
 const int RBD_STEP = 16;
 const int BF_STEP = 17;
