@@ -16,64 +16,44 @@ stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
 
-class ObjectType(Enum):
-	PUMP = 1
-	ACTUATOR = 2
-	STEPPER = 3
-
-class Comms():
+class Comms:
 	def __init__(self):
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
+		sleep.wait(1) # for luck
 	
 	def send_comm(self,msg):
-		msg = msg+'\n'
-		msg2 = bytes(msg, 'utf-8')
-		print(msg2)
-		self.ser.write(msg2)
+		msgg = bytes(msg + '\n', 'utf-8')
+		print(msgg)
+		self.ser.write(msg)
 		print(self.ser.readline())
-		# print(response)
 		self.ser.flush()
-		# self.ser.reset_input_buffer()
 
-class GeneralObject():
-	def __init__(self,objID,obj_type,speed,accel):
-		self.objID = objID
-		self.obj_type = obj_type
+class Stepper:
+	def __init__(self, comm, speed, acceleration, bCodeID):
+		self.comm = comm
 		self.speed = speed
-		self.accel = accel
+		self.acceleration = acceleration
+		self.id = bCodeID
+		_init_motor_settings()
 
-	def turn_on(self,comm): # for latches and actuators only
-		if self.obj_type == ObjectType.ACTUATOR:
-			comm.send_comm('B1'+ str(self.objID)+' 1')
-		else:
-			print('Cannot turn on this object- this object is not an actuator')
+	def _init_motor_settings(self):
+		# set acceleration
+		self.comm.send_comm("B92 {} {}".format(self.id, accel))
+		time.sleep(1)
+		self.comm.send_comm("B91 {} {}".format(self.id, accel))
+		time.sleep(1)
 
-	def turn_off(self,comm): # for latches and actuators only
-		if self.obj_type == ObjectType.ACTUATOR:
-			comm.send_comm(f'B1 {self.objID} 0')
-		else:
-			print('Cannot turn on this object- this object is not an actuator')
+	def move(self, revs):
+		self.comm.send_comm("B0 {} {}".format(self.id, revs))
 
-	def move_motor(self,comm,accel,speed,revs):
-		if self.obj_type == ObjectType.STEPPER:
-			time.sleep(1)
-			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set acceleration in mm/s2
-			time.sleep(1)
-			print(comm.ser.readline())
-			comm.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
-			time.sleep(5)
-			print(comm.ser.readline())
-			comm.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
-		else:
-			print('Cannot move this object- this object is not an stepper')
+class Relay:
+	def __init__(self, comm, bCodeID):
+		self.comm = comm
+		self.id = bCodeID
 
-	def run_pump(self,comm,accel,speed,revs):
-		if self.obj_type == ObjectType.PUMP:
-			comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
-			comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
-			comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
-		else:
-			print('Cannot run this object- this object is not a pump')
+	def set_active(self, isActive):
+		self.comm.send_comm("B1 {} {}",format(self.id, 1 if isActive else 0))
+
 
 # Stepper Class
 # 	- Init
