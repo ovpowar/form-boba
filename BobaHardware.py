@@ -25,7 +25,7 @@ class Comms():
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
 		self.ser.write(msg2)
-		print(response)
+		# print(response)
 		self.ser.flush()
 		# self.ser.reset_input_buffer()
 
@@ -53,8 +53,10 @@ class GeneralObject():
 			time.sleep(1)
 			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
 			time.sleep(1)
+			print(comm.ser.readline())
 			comm.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
 			time.sleep(5)
+			print(comm.ser.readline())
 			comm.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
@@ -106,7 +108,7 @@ class BobaMachine():
 	def test_code(self):
 	    print("HELLO")
 	    # self.L.turn_on()
-	    self.C.move_motor(self.comm,120000,40000,7)
+	    self.C.move_motor(self.comm,60000,40000,7)
 	    print(self.comm.ser)
 	    self.comm.ser.close()
 	    print(self.comm.ser)
