@@ -12,10 +12,6 @@ from enum import Enum
 # shot dispenser 2 = Y
 # simple syrup = Z
 
-stepper_conversion = 1.8 # degrees per step
-cooking_time = 4 # minutes for boba cooking
-transfer_time = 5 # seconds wait after flipping the basket
-
 def calculate_dose(volume):
     flow_rate_mLps = 15
     speed_rps = 1000 # follow pump speed
@@ -138,23 +134,22 @@ class BobaMachine():
         print(order_queue)
 
     def cook_tapioca(self):
-        self.lift_lid(180) # lifts the lid
-        self.return_strainer(180) # strainer comes back
+        self.lift_lid(14) # lifts the lid
+        self.return_strainer(14) # strainer comes back
         self.dispense_raw_boba() # dispenses through the hopper
         self.drop_lid()
         time.sleep(400)
-        self.lift_lid(180)  # lifts the lid
-        #TODO: Do the flippity flop on the strainer
+        self.lift_lid(14)  # lifts the lid
 
-    def lift_lid(self, transfer_angle):
-        revolutions = transfer_angle/360
+    def lift_lid(self, revolutions):
+        # revolutions = transfer_angle/360
         self.Latch.set_active(True)
         time.sleep(1)
         self.BobaFlipper.move(revolutions)
         time.sleep(10)
 
-    def return_strainer(self, transfer_angle):
-        revolutions = transfer_angle/360
+    def return_strainer(self, revolutions):
+        # revolutions = transfer_angle/360
         self.BobaFlipper.move(-revolutions)
         time.sleep(10)
 
@@ -199,20 +194,6 @@ class BobaMachine():
             self.dispense_flavors(self.ShotDispense2)
         self.dispense_syrup(syrup_level)
         self.dispense_tea()
-
-
-    def test_motors(self):
-    	for _ in range(2):
-	    	self.BobaFlipper.move(-6)
-	    	time.sleep(2)
-	    	self.BobaFlipper.move(6)
-	    	time.sleep(2)
-    	print("DONE")
-
-
-if __name__ == "__main__":
-    bob4 = BobaMachine()
-    bob4.test_motors()
     
 
 
