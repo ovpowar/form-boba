@@ -202,17 +202,11 @@ class BobaMachine():
 
 
     def test_motors(self):
-    	# self.ShotDispense1.move(-1)
-    	# time.sleep(2)
-    	# self.ShotDispense2.move(-1)
-    	# time.sleep(2)
-    	# self.ShotDispense3.move(-1)
-    	# time.sleep(2)
-    	# self.ShotDispense4.move(-1)
-    	# time.sleep(2)
-    	# self.RawBobaDispenser.move(-1)
-    	# time.sleep(2)
-    	self.BobaFlipper.move(-6)
+    	for _ in range(2):
+	    	self.BobaFlipper.move(-6)
+	    	time.sleep(2)
+	    	self.BobaFlipper.move(6)
+	    	time.sleep(2)
     	print("DONE")
 
 
@@ -222,3 +216,4 @@ if __name__ == "__main__":
     
 
 
+	
