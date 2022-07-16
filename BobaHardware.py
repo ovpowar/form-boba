@@ -57,15 +57,6 @@ class Relay:
 		self.comm.send_comm("B1 {} {}".format(self.id, str(1) if isActive else str(0)))
 
 
-# Stepper Class
-#   - Init
-#       - COMM Object
-#       - Speed
-#       - Acceleration
-#       - BCode Descriptor
-#   - Move
-#       - Revs
-
 
 class OrderQueue():
     def __init__(self):

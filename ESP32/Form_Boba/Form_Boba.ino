@@ -83,7 +83,7 @@ void gpio_pin(MyCommandParser::Argument *args, char *response){
   if (args[0].asInt64 == 76){ // ASCII Value for L is 76
     digitalWrite(LATCH_PIN, args[1].asDouble);
   }
-  else if (args[1].asInt64 == 82){ // ASCII Value for R is 82
+  else if (args[0].asInt64 == 82){ // ASCII Value for R is 82
     digitalWrite(COOKER_PIN, args[1].asDouble);
   }
 }
