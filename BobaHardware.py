@@ -19,42 +19,42 @@ def calculate_dose(volume):
     return revs
 
 class Comms:
-	def __init__(self):
-		self.ser = serial.Serial('/dev/tty.usbserial-0001', 115200)
-		time.sleep(1) # for luck
-	
-	def send_comm(self,msg):
-		msgg = bytes(msg + '\n', 'utf-8')
-		print(msgg)
-		self.ser.write(msgg)
-		print(self.ser.readline())
-		self.ser.flush()
+    def __init__(self):
+        self.ser = serial.Serial('/dev/tty.usbserial-0001', 115200)
+        time.sleep(1) # for luck
+    
+    def send_comm(self,msg):
+        msgg = bytes(msg + '\n', 'utf-8')
+        print(msgg)
+        self.ser.write(msgg)
+        print(self.ser.readline())
+        self.ser.flush()
 
 class Stepper:
-	def __init__(self, comm, speed, acceleration, bCodeID):
-		self.comm = comm
-		self.speed = speed
-		self.acceleration = acceleration
-		self.id = bCodeID
-		self._init_motor_settings()
+    def __init__(self, comm, speed, acceleration, bCodeID):
+        self.comm = comm
+        self.speed = speed
+        self.acceleration = acceleration
+        self.id = bCodeID
+        self._init_motor_settings()
 
-	def _init_motor_settings(self):
-		# set acceleration
-		self.comm.send_comm("B92 {} {}".format(self.id, self.acceleration))
-		time.sleep(1)
-		self.comm.send_comm("B91 {} {}".format(self.id, self.speed))
-		time.sleep(1)
+    def _init_motor_settings(self):
+        # set acceleration
+        self.comm.send_comm("B92 {} {}".format(self.id, self.acceleration))
+        time.sleep(1)
+        self.comm.send_comm("B91 {} {}".format(self.id, self.speed))
+        time.sleep(1)
 
-	def move(self, revs):
-		self.comm.send_comm("B0 {} {}".format(self.id, revs))
+    def move(self, revs):
+        self.comm.send_comm("B0 {} {}".format(self.id, revs))
 
 class Relay:
-	def __init__(self, comm, bCodeID):
-		self.comm = comm
-		self.id = bCodeID
+    def __init__(self, comm, bCodeID):
+        self.comm = comm
+        self.id = bCodeID
 
-	def set_active(self, isActive):
-		self.comm.send_comm("B1 {} {}".format(self.id, str(1) if isActive else str(0)))
+    def set_active(self, isActive):
+        self.comm.send_comm("B1 {} {}".format(self.id, str(1) if isActive else str(0)))
 
 
 
@@ -153,13 +153,13 @@ class BobaMachine():
         time.sleep(1)
 
     def calculate_dose(tea_volume):
-    	# dose = ? mL/rev
-    	return tea_volume/dose
+        # dose = ? mL/rev
+        return tea_volume/dose
 
     def dispense_tea(room_for_milk):
         # tea_volume = 250 #mL
-	    revolutions = calculate_dose(tea_volume)
-	    revolutions = revolutions/2 if room_for_milk else revolutions
+        revolutions = calculate_dose(tea_volume)
+        revolutions = revolutions/2 if room_for_milk else revolutions
         self.ShotDispense4.move(revolutions)
         time.sleep(abs(2*revolutions))
 
@@ -190,4 +190,4 @@ class BobaMachine():
     
 
 
-	
+    
