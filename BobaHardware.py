@@ -24,9 +24,9 @@ class Comms():
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
-		response = comm.ser.write(msg2)
+		self.ser.write(msg2)
 		print(response)
-		comm.ser.flush()
+		self.ser.flush()
 		# self.ser.reset_input_buffer()
 
 class GeneralObject():
@@ -51,11 +51,11 @@ class GeneralObject():
 	def move_motor(self,comm,accel,speed,revs):
 		if self.obj_type == 'stepper':
 			time.sleep(1)
-			comm.send_comm(comm,"B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
+			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
 			time.sleep(1)
-			comm.send_comm(comm,"B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
+			comm.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
 			time.sleep(5)
-			comm.send_comm(comm,"B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
+			comm.send_comm("B0 "+str(self.objID)+" "+str(revs)) #stepper move in rev
 		else:
 			print('Cannot move this object- this object is not an stepper')
 
