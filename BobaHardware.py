@@ -20,7 +20,7 @@ class Comms():
 	def __init__(self):
 		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
 	
-	def send_comm(self,comm,msg):
+	def send_comm(self,msg):
 		msg = msg+'\n'
 		msg2 = bytes(msg, 'utf-8')
 		print(msg2)
