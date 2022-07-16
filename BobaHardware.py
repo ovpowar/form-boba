@@ -83,10 +83,10 @@ class BobaMachine():
         # Initialize Steppers
         dispenser_speed = 1500
         dispenser_acceleration = 1000
-        flipper_speed = 1000
-        flipper_acceleration = 4000
-        pump_speed = 1000
-        pump_acceleration = 1000
+        flipper_speed = 500
+        flipper_acceleration = 300
+        pump_speed = 10
+        pump_acceleration = 30
         self.RawBobaDispenser = Stepper(ser, dispenser_speed, dispenser_acceleration, 'B')
         self.BobaFlipper = Stepper(ser, flipper_speed, flipper_acceleration, 'C')
         self.ShotDispense1 = Stepper(ser, pump_speed, pump_acceleration, 'X')
@@ -125,12 +125,12 @@ class BobaMachine():
         print(order_queue)
 
     def cook_tapioca(self):
-        self.lift_lid(14) # lifts the lid
-        self.return_strainer(14) # strainer comes back
+        self.lift_lid(15) # lifts the lid
+        self.return_strainer(15) # strainer comes back
         self.dispense_raw_boba() # dispenses through the hopper
         self.drop_lid()
         time.sleep(400)
-        self.lift_lid(14)  # lifts the lid
+        self.lift_lid(15)  # lifts the lid
 
     def lift_lid(self, revolutions):
         # revolutions = transfer_angle/360
@@ -153,25 +153,25 @@ class BobaMachine():
         time.sleep(1)
 
     def calculate_dose(tea_volume):
-        # dose = ? mL/rev
+        dose = 1.5 # mL/rev
         return tea_volume/dose
 
     def dispense_tea(room_for_milk):
-        # tea_volume = 250 #mL
+        tea_volume = 250 # mL
         revolutions = calculate_dose(tea_volume)
         revolutions = revolutions/2 if room_for_milk else revolutions
         self.ShotDispense4.move(revolutions)
         time.sleep(abs(2*revolutions))
 
     def dispense_syrup(syrup_level):
-        Max_mL = 10
+        Max_mL = 30 # mL = 2 tbsp
         syrup_vol = syrup_level/100*Max_mL
         revolutions = calculate_dose(syrup_vol)
         self.ShotDispense3.move(revolutions)
         time.sleep(abs(revolutions*2))
 
     def dispense_flavors(ShotDispense):
-        flavor_vol = 15 #mL
+        flavor_vol = 3 #mL
         revolutions = calculate_dose(flavor_vol)
         ShotDispense.move(revolutions)
         time.sleep(1*revolutions)
