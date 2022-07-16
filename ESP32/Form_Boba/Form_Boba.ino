@@ -13,6 +13,8 @@ ESP_FlexyStepper shotdispense4;
 ESP_FlexyStepper rawbobadispense;
 ESP_FlexyStepper bobaflipper;
 
+const int STEPPER_ENABLE = 13;
+
 const int SD1_STEP = 15;
 const int SD2_STEP = 2;
 const int SD3_STEP = 21;
@@ -73,6 +75,8 @@ void setup()
   parser.registerCommand("B91", "sd", &stepper_speed);
   parser.registerCommand("B92", "sd", &stepper_acceleration);
   parser.registerCommand("?","", &cmd_status);
+
+  disable_steppers();
 }
 
 void cmd_status(MyCommandParser::Argument *args, char *response){
@@ -86,6 +90,14 @@ void gpio_pin(MyCommandParser::Argument *args, char *response){
   else if (args[0].asInt64 == 82){ // ASCII Value for R is 82
     digitalWrite(COOKER_PIN, args[1].asDouble);
   }
+}
+
+void enable_steppers() {
+    digitalWrite(STEPPER_ENABLE, 0);
+}
+
+void disable_steppers() {
+    digitalWrite(STEPPER_ENABLE, 1);
 }
 
 void stepper_speed(MyCommandParser::Argument *args, char *response) {
@@ -146,6 +158,7 @@ void stepper_acceleration(MyCommandParser::Argument *args, char *response) {
 
 void stepper_move(MyCommandParser::Argument *args, char *response) {
   // Pick the stepper
+  enable_steppers();
   if (args[0].asInt64 == 88){ // ASCII Value for X is 88
     int steps_to_move = args[1].asDouble*STEPS_PER_REVOLUTION
     Serial.println(steps_to_move);
@@ -181,6 +194,7 @@ void stepper_move(MyCommandParser::Argument *args, char *response) {
     Serial.println(args[0].asString);
     Serial.println("FAILED");
   }
+  disable_steppers();
 
 }
 
