@@ -71,7 +71,6 @@ class Relay:
 #       - Revs
 
 
-
 class OrderQueue():
     def __init__(self):
         self.q = []
@@ -202,7 +201,7 @@ class BobaMachine():
         self.dispense_tea()
 
 
-    def test_motors():
+    def test_motors(self):
     	self.ShotDispense1.move(1)
     	time.sleep(5)
     	self.ShotDispense2.move(1)
