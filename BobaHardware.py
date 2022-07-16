@@ -58,7 +58,7 @@ class Relay:
 		self.id = bCodeID
 
 	def set_active(self, isActive):
-		self.comm.send_comm("B1 {} {}",format(self.id, 1 if isActive else 0))
+		self.comm.send_comm("B1 {} {}",format(self.id, str(1) if isActive else str(0)))
 
 
 
