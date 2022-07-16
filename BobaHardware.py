@@ -1,5 +1,6 @@
 import serial
 import time
+from enum import Enum
 
 # ---- KEY
 # rice cooker = R
@@ -15,6 +16,10 @@ stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
 
+class ObjectType(Enum):
+	PUMP = 1
+	ACTUATOR = 2
+	STEPPER = 3
 
 class Comms():
 	def __init__(self):
@@ -38,21 +43,21 @@ class GeneralObject():
 		self.accel = accel
 
 	def turn_on(self,comm): # for latches and actuators only
-		if self.obj_type == 'actuator':
+		if self.obj_type == ObjectType.ACTUATOR:
 			comm.send_comm('B1'+ str(self.objID)+' 1')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def turn_off(self,comm): # for latches and actuators only
-		if self.obj_type == 'actuator':
+		if self.obj_type == ObjectType.ACTUATOR:
 			comm.send_comm(f'B1 {self.objID} 0')
 		else:
 			print('Cannot turn on this object- this object is not an actuator')
 
 	def move_motor(self,comm,accel,speed,revs):
-		if self.obj_type == 'stepper':
+		if self.obj_type == ObjectType.STEPPER:
 			time.sleep(1)
-			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set speed in mm/s2
+			comm.send_comm("B92 "+str(self.objID)+" "+str(accel)) # set acceleration in mm/s2
 			time.sleep(1)
 			print(comm.ser.readline())
 			comm.send_comm("B91 "+str(self.objID)+" "+str(speed)) # set speed in mm/s
@@ -63,7 +68,7 @@ class GeneralObject():
 			print('Cannot move this object- this object is not an stepper')
 
 	def run_pump(self,comm,accel,speed,revs):
-		if self.obj_type == 'pump':
+		if self.obj_type == ObjectType.PUMP:
 			comm.send_comm(f'B92 {self.objID} {accel}') # set speed in mm/s2
 			comm.send_comm(f'B91 {self.objID} {speed}') # set speed in mm/s
 			comm.send_comm(f'B0 {self.objID} {revs}') #stepper move in rev
@@ -91,14 +96,14 @@ class OrderQueue():
 
 class BobaMachine():
 	def __init__(self):
-	    self.R = GeneralObject('R','actuator',0,0)
-	    self.L = GeneralObject('L','actuator',0,0)
-	    self.A = GeneralObject('A','stepper',0.5,40000)
-	    self.B = GeneralObject('B','pump',0.5,40000)
-	    self.C = GeneralObject('C','stepper',0.5,40000)
-	    self.X = GeneralObject('X','pump',0.5,40000)
-	    self.Y = GeneralObject('Y','pump',0.5,40000)
-	    self.Z = GeneralObject('Z','pump',0.5,40000)
+	    self.R = GeneralObject('R', ObjectType.ACTUATOR ,0,0)
+	    self.L = GeneralObject('L',ObjectType.ACTUATOR,0,0)
+	    self.A = GeneralObject('A', ObjectType.STEPPER,0.5,40000)
+	    self.B = GeneralObject('B',ObjectType.PUMP,0.5,40000)
+	    self.C = GeneralObject('C',ObjectType.STEPPER,0.5,40000)
+	    self.X = GeneralObject('X',ObjectType.PUMP,0.5,40000)
+	    self.Y = GeneralObject('Y',ObjectType.PUMP,0.5,40000)
+	    self.Z = GeneralObject('Z',ObjectType.PUMP,0.5,40000)
 	    self.order_queue = OrderQueue()
 	    self.flavors = {}
 	    self.status = "Ready"
