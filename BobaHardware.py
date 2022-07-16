@@ -109,7 +109,7 @@ class BobaMachine():
 	def test_code(self):
 	    print("HELLO")
 	    # self.L.turn_on()
-	    self.C.move_motor(self.comm,10000,20000,7)
+	    self.C.move_motor(self.comm,5000,1000,7)
 	    print(self.comm.ser)
 	    self.comm.ser.close()
 	    print(self.comm.ser)
