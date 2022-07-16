@@ -6,8 +6,16 @@ def test_flipper_basket(bob4):
 	bob4.cook_tapioca()
 
 
-def test_pumps(bob4):
-	bob4.
+def test_tea(bob4):
+	bob4.dispense_tea()
+
+
+def test_syrup(bob4,syrup_level):
+	bob4.dispense_syrup(syrup_level)
+
+def test_flavors(bob4):
+	bob4.dispense_flavors(bob4.ShotDispense1)
+	bob4.dispense_flavors(bob4.ShotDispense2)
 
 
 def test_motors(bob4):
@@ -21,7 +29,7 @@ def test_motors(bob4):
 
 def main():
 	bob4 = BobaMachine()
-	bob4.test_motors()
+	bob4.test_syrup(2)
 	bob4.ser.close()
 
 
