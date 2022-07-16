@@ -26,12 +26,6 @@ def test_motors(bob4):
     	time.sleep(2)
 	print("DONE")
 
-
-def main():
-	bob4 = BobaMachine()
-	bob4.test_syrup(2)
-	bob4.ser.close()
-
-
+	
 if __name__ == '__main__':
-	main()
+	bob4 = BobaMachine()
