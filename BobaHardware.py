@@ -75,6 +75,22 @@ class GeneralObject():
 		else:
 			print('Cannot run this object- this object is not a pump')
 
+# Stepper Class
+# 	- Init
+#		- COMM Object
+#		- Speed
+#		- Acceleration
+#		- BCode Descriptor
+#	- Move
+#		- Revs
+
+# Relay Class
+#	- Init
+#		- COMM Object
+#		- BCode descriptor
+#	- SetActive
+#		- Boolean
+
 
 class OrderQueue():
 	def __init__(self):
