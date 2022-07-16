@@ -165,9 +165,10 @@ class BobaMachine():
     	# dose = ? mL/rev
     	return tea_volume/dose
 
-    def dispense_tea():
+    def dispense_tea(room_for_milk):
         # tea_volume = 250 #mL
-        revolutions = calculate_dose(tea_volume)
+	    revolutions = calculate_dose(tea_volume)
+	    revolutions = revolutions/2 if room_for_milk else revolutions
         self.ShotDispense4.move(revolutions)
         time.sleep(abs(2*revolutions))
 
@@ -193,7 +194,8 @@ class BobaMachine():
         if current_order['is_shot2']:
             self.dispense_flavors(self.ShotDispense2)
         self.dispense_syrup(syrup_level)
-        self.dispense_tea()
+        room_for_milk = current_order['room_for_milk']
+        self.dispense_tea(room_for_milk)
     
 
 
