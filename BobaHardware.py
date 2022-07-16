@@ -184,7 +184,7 @@ class BobaMachine():
         flavor_vol = 15 #mL
         revolutions = calculate_dose(flavor_vol)
         Pump.move(revolutions)
-        time.sleep(4*revolutions)
+        time.sleep(1*revolutions)
 
 
     def make_boba(self, current_order):
