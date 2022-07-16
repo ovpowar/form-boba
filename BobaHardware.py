@@ -202,17 +202,17 @@ class BobaMachine():
 
 
     def test_motors(self):
-    	self.ShotDispense1.move(1)
-    	time.sleep(5)
-    	self.ShotDispense2.move(1)
-    	time.sleep(5)
-    	self.ShotDispense3.move(1)
-    	time.sleep(5)
-    	self.ShotDispense4.move(1)
-    	time.sleep(5)
-    	self.RawBobaDispenser.move(1)
-    	time.sleep(5)
-    	self.BobaFlipper.move(1)
+    	# self.ShotDispense1.move(-1)
+    	# time.sleep(2)
+    	# self.ShotDispense2.move(-1)
+    	# time.sleep(2)
+    	# self.ShotDispense3.move(-1)
+    	# time.sleep(2)
+    	# self.ShotDispense4.move(-1)
+    	# time.sleep(2)
+    	# self.RawBobaDispenser.move(-1)
+    	# time.sleep(2)
+    	self.BobaFlipper.move(-6)
     	print("DONE")
 
 
