@@ -55,156 +55,151 @@ class Relay:
 		self.comm.send_comm("B1 {} {}",format(self.id, 1 if isActive else 0))
 
 
+
 # Stepper Class
-# 	- Init
-#		- COMM Object
-#		- Speed
-#		- Acceleration
-#		- BCode Descriptor
-#	- Move
-#		- Revs
+#   - Init
+#       - COMM Object
+#       - Speed
+#       - Acceleration
+#       - BCode Descriptor
+#   - Move
+#       - Revs
 
 # Relay Class
-#	- Init
-#		- COMM Object
-#		- BCode descriptor
-#	- SetActive
-#		- Boolean
+#   - Init
+#       - COMM Object
+#       - BCode descriptor
+#   - SetActive
+#       - Boolean
 
 
 class OrderQueue():
-	def __init__(self):
-		self.q = []
+    def __init__(self):
+        self.q = []
 
-	def update(self, order):
-		self.q.append(order)
+    def update(self, order):
+        self.q.append(order)
 
-	def update_sequence(self):
-		k = 0
-		for i in self.q:
-			k +=1
-			i['queue_number'] = k
+    def update_sequence(self):
+        k = 0
+        for i in self.q:
+            k +=1
+            i['queue_number'] = k
 
-	def remove_order_number(self, number):
-		self.q.pop(number-1)
-		self.update_sequence()
+    def remove_order_number(self, number):
+        self.q.pop(number-1)
+        self.update_sequence()
 
 
 class BobaMachine():
-	def __init__(self):
-	    self.R = GeneralObject('R', ObjectType.ACTUATOR ,0,0)
-	    self.L = GeneralObject('L',ObjectType.ACTUATOR,0,0)
-	    self.A = GeneralObject('A', ObjectType.STEPPER,0.5,40000)
-	    self.B = GeneralObject('B',ObjectType.PUMP,0.5,40000)
-	    self.C = GeneralObject('C',ObjectType.STEPPER,0.5,40000)
-	    self.X = GeneralObject('X',ObjectType.PUMP,0.5,40000)
-	    self.Y = GeneralObject('Y',ObjectType.PUMP,0.5,40000)
-	    self.Z = GeneralObject('Z',ObjectType.PUMP,0.5,40000)
-	    self.order_queue = OrderQueue()
-	    self.flavors = {}
-	    self.status = "Ready"
-	    self.update_flavors("PassionFruit", "Mango")
-	    self.comm = Comms()
+    def __init__(self):
+        ser = Comms()
 
-	
-	def test_code(self):
-	    print("HELLO")
-	    # self.L.turn_on()
-	    self.C.move_motor(self.comm,5000,1000,7)
-	    print(self.comm.ser)
-	    self.comm.ser.close()
-	    print(self.comm.ser)
-	    # test_list = [self.A, self.B, self.C, self.X, self.Y, self.Z]
-	    # actuator_list = [self.L, self.R]
-	    # msg0 = input('M (motor) or A (actuator)? ')
-	    # if msg0 == 'M':
-		   #  i = input('Choose device? 0-5 for ABCXYZ ')
-		   #  msg1 = input('Accel in mmps2: ')
-		   #  msg2 = input('Speed in rev/s: ')
-		   #  msg3 = input('Num revs: ')
-		   #  test_list[int(i)].move_motor(int(msg1), int(msg2), int(msg3))
-	    # if msg0 == 'A':
-		   #  msg0 = input('Choose device? 0-1 for LR ')
-		   #  test_list[int(i)].turn_on()
-		   #  time.sleep(5)
-		   #  test_list[intt(i)].turn_off()
+        # Initialize Steppers
+        self.RawBobaDispenser = Stepper(ser, dispenser_speed, dispenser_acceleration, 'B')
+        self.BobaFlipper = Stepper(ser, flipper_speed, flipper_acceleration, 'C')
+        self.ShotDispense1 = Stepper(ser, pump_speed, pump_acceleration, 'X')
+        self.ShotDispense2 = Stepper(ser, pump_speed, pump_acceleration, 'Y')
+        self.ShotDispense3 = Stepper(ser, pump_speed, pump_acceleration, 'Z')
+        self.ShotDispense4 = Stepper(ser, pump_speed, pump_acceleration, 'A')
 
-	def update_flavors(self, f1, f2):
-		if f1 is not None:
-			self.flavors['shot1'] = f1
-		if f2 is not None:
-			self.flavors['shot2'] = f2
+        # Initialize Relays
+        self.Latch = Relay(ser, 'L')
+        self.RiceCooker = Relay(ser, 'R')
 
-	def check_order(self, number):
-		if self.order_queue.q[number - 1]["status"] == "Queued":
-			if self.status == "Ready":
-				return "Ready"
-			else:
-				return "Wait"
+        self.order_queue = OrderQueue()
+        self.flavors = {}
+        self.status = "Ready"
+        self.update_flavors("PassionFruit", "Mango")
 
-	def start_preparing_order(self, order):
-		self.order_queue.q[order]["status"] = "Cooking"
-		self.make_boba(self, self.order_queue.d[order])
-		self.order_queue.q[order]["status"] = "Finished"
+    def update_flavors(self, f1, f2):
+        if f1 is not None:
+            self.flavors['shot1'] = f1
+        if f2 is not None:
+            self.flavors['shot2'] = f2
 
-	def update(self, order_queue):
-		self.order_queue = order_queue
-		print(order_queue)
+    def check_order(self, number):
+        if self.order_queue.q[number - 1]["status"] == "Queued":
+            if self.status == "Ready":
+                return "Ready"
+            else:
+                return "Wait"
 
-	def cook_tapioca(self):
-		self.transfer_boba() # lifts the lid
-		dispense_angle = 95
-		steps = dispense_angle / stepper_conversion
-		response = self.C.move_motor(self.C.accel,self.C.speed,steps) # dispense the boba into the rice cooker
-		self.R.turn_on() # turn on the rice cooker
-		time.sleep(cooking_time*60) # cooking the boba time
-		self.R.turn_off() # turn of the rice cooker
-		self.transfer_boba()
-		self.release_latch()
+    def start_preparing_order(self, order):
+        self.order_queue.q[order]["status"] = "Cooking"
+        self.make_boba(self, self.order_queue.d[order])
+        
+    def update(self, order_queue):
+        self.order_queue = order_queue
+        print(order_queue)
 
-	def transfer_boba(self):
-		transfer_angle = 180
-		steps = dispense_angle / stepper_conversion
-		response = self.A.move_motor(self.A.accel,self.A.speed,steps) # dump out the boba
-		time.sleep(transfer_time)
-		response = self.A.move_motor(self.A.accel,self.A.speed,-steps) # return the basket
+    def cook_tapioca(self):
+        self.lift_lid(180) # lifts the lid
+        self.return_strainer(180) # strainer comes back
+        self.dispense_raw_boba() # dispenses through the hopper
+        self.drop_lid()
+        time.sleep(400)
+        self.lift_lid(180)  # lifts the lid
+        #TODO: Do the flippity flop on the strainer
 
-	def release_latch(self):
-		response = self.L.turn_off()
+    def lift_lid(self, transfer_angle):
+        revolutions = transfer_angle/360
+        self.Latch.set_active(True)
+        time.sleep(1)
+        self.BobaFlipper.move(revolutions)
+        time.sleep(10)
 
-	def dispense_tea():
-		tea_volume = 250 #mL
-		dose = 15 #mL/rev
-		revs = tea_volume/dose
-		self.B.run_pump(self.B.accel, self.B.speed,revs)
+    def return_strainer(self, transfer_angle):
+        revolutions = transfer_angle/360
+        self.BobaFlipper.move(-revolutions)
+        time.sleep(10)
 
-	def dispense_syrup(syrup_level):
-		syrup_factor = 2 #100% / 50mL
-		dose = 15 #mL/rev
-		revs = syrup_factor/syrup_level/dose
-		self.Z.run_pump(self.Z.accel,self.Z.speed,revs)
+    def dispense_raw_boba(self, dispense_revolutions):
+        self.RawBobaDispenser.move(dispense_revolutions)
+        time.sleep(4*dispense_revolutions)
 
-	def dispense_flavors(flavor,which_pump):
-		flavor_vol = 15 #mL
-		dose = 15 #mL/rev
-		revs = flavor_vol/dose
-		which_pump.run_pump(self.which_pump.accel,self.which_pump.speed,revs)
+    def drop_lid(self):
+        self.Latch.set_active(False)
+        time.sleep(1)
 
-	def make_boba(self, current_order):
-		if current_order['is_tapioca']:
-			self.cook_tapioca()
-		if current_order['is_shot1']: 
-			self.dispense_flavors(self.flavors['shot1'], self.X)
-		if current_order['is_shot2']:
-			self.dispense_flavors(self.flavors['shot2'], self.Y)
-		self.dispense_syrup(syrup_level)
-		self.dispense_tea()
+    def dispense_tea():
+        # tea_volume = 250 #mL
+        # dose = 15 #mL/rev
+        # revs = tea_volume/dose
+        revolutions = calculate_dose(tea_volume)
+        self.ShotDispense4.move(revolutions)
+        time.sleep(2*revolutions)
 
+    def dispense_syrup(syrup_level):
+        # syrup_factor = 2 #100% / 50mL
+        # dose = 15 #mL/rev
+        # revs = syrup_factor/syrup_level/dose
+        Max_mL = 10
+        syrup_vol = syrup_level/100*Max_mL
+        revolutions = calculate_dose(syrup_vol)
+        self.ShotDispense3.move(revolutions)
+        time.sleep(revolutions*2)
+
+    def dispense_flavors(Pump):
+        flavor_vol = 15 #mL
+        revolutions = calculate_dose(flavor_vol)
+        Pump.move(revolutions)
+        time.sleep(4*revolutions)
+
+
+    def make_boba(self, current_order):
+        if current_order['is_tapioca']:
+            self.cook_tapioca()
+        if current_order['is_shot1']: 
+            self.dispense_flavors(self.ShotDispense1)
+        if current_order['is_shot2']:
+            self.dispense_flavors(self.ShotDispense2)
+        self.dispense_syrup(syrup_level)
+        self.dispense_tea()
 
 
 if __name__ == "__main__":
-	bob4 = BobaMachine()
-	bob4.test_code()
-	
+    bob4 = BobaMachine()
+    
 
 
