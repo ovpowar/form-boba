@@ -188,6 +188,7 @@ class BobaMachine():
         room_for_milk = current_order['room_for_milk']
         self.dispense_tea(room_for_milk)
     
-
+if __name__ == "__main__":
+    bob4 = BobaMachine()
 
     
