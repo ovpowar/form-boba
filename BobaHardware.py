@@ -16,15 +16,21 @@ stepper_conversion = 1.8 # degrees per step
 cooking_time = 4 # minutes for boba cooking
 transfer_time = 5 # seconds wait after flipping the basket
 
+def calculate_dose(volume):
+    flow_rate_mLps = 15
+    speed_rps = 1000 # follow pump speed
+    revs = volume/flow_rate_mLps*speed_rps
+    return revs
+
 class Comms:
 	def __init__(self):
-		self.ser = serial.Serial('/dev/ttyUSB0', 115200)
-		sleep.wait(1) # for luck
+		self.ser = serial.Serial('/dev/tty.usbserial-0001', 115200)
+		time.sleep(1) # for luck
 	
 	def send_comm(self,msg):
 		msgg = bytes(msg + '\n', 'utf-8')
 		print(msgg)
-		self.ser.write(msg)
+		self.ser.write(msgg)
 		print(self.ser.readline())
 		self.ser.flush()
 
@@ -34,13 +40,13 @@ class Stepper:
 		self.speed = speed
 		self.acceleration = acceleration
 		self.id = bCodeID
-		_init_motor_settings()
+		self._init_motor_settings()
 
 	def _init_motor_settings(self):
 		# set acceleration
-		self.comm.send_comm("B92 {} {}".format(self.id, accel))
+		self.comm.send_comm("B92 {} {}".format(self.id, self.acceleration))
 		time.sleep(1)
-		self.comm.send_comm("B91 {} {}".format(self.id, accel))
+		self.comm.send_comm("B91 {} {}".format(self.id, self.speed))
 		time.sleep(1)
 
 	def move(self, revs):
@@ -54,23 +60,6 @@ class Relay:
 	def set_active(self, isActive):
 		self.comm.send_comm("B1 {} {}",format(self.id, 1 if isActive else 0))
 
-
-
-# Stepper Class
-#   - Init
-#       - COMM Object
-#       - Speed
-#       - Acceleration
-#       - BCode Descriptor
-#   - Move
-#       - Revs
-
-# Relay Class
-#   - Init
-#       - COMM Object
-#       - BCode descriptor
-#   - SetActive
-#       - Boolean
 
 
 class OrderQueue():
@@ -96,6 +85,12 @@ class BobaMachine():
         ser = Comms()
 
         # Initialize Steppers
+        dispenser_speed = 1500
+        dispenser_acceleration = 1000
+        flipper_speed = 1000
+        flipper_acceleration = 4000
+        pump_speed = 1000
+        pump_acceleration = 1000
         self.RawBobaDispenser = Stepper(ser, dispenser_speed, dispenser_acceleration, 'B')
         self.BobaFlipper = Stepper(ser, flipper_speed, flipper_acceleration, 'C')
         self.ShotDispense1 = Stepper(ser, pump_speed, pump_acceleration, 'X')
@@ -156,7 +151,7 @@ class BobaMachine():
 
     def dispense_raw_boba(self, dispense_revolutions):
         self.RawBobaDispenser.move(dispense_revolutions)
-        time.sleep(4*dispense_revolutions)
+        time.sleep(abs(1*dispense_revolutions))
 
     def drop_lid(self):
         self.Latch.set_active(False)
@@ -168,7 +163,7 @@ class BobaMachine():
         # revs = tea_volume/dose
         revolutions = calculate_dose(tea_volume)
         self.ShotDispense4.move(revolutions)
-        time.sleep(2*revolutions)
+        time.sleep(abs(2*revolutions))
 
     def dispense_syrup(syrup_level):
         # syrup_factor = 2 #100% / 50mL
@@ -178,13 +173,13 @@ class BobaMachine():
         syrup_vol = syrup_level/100*Max_mL
         revolutions = calculate_dose(syrup_vol)
         self.ShotDispense3.move(revolutions)
-        time.sleep(revolutions*2)
+        time.sleep(abs(revolutions*2))
 
     def dispense_flavors(Pump):
         flavor_vol = 15 #mL
         revolutions = calculate_dose(flavor_vol)
         Pump.move(revolutions)
-        time.sleep(1*revolutions)
+        time.sleep(abs(1*revolutions))
 
 
     def make_boba(self, current_order):
